@@ -5,12 +5,10 @@ name = "sakari.sms"
 version = "@toml.version@"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = [] # TODO: Add keywords
-# icon = "icon.png" # TODO: Add icon
+keywords = ["Vendor/Sakari", "Area/Communication", "Type/Connector"]
+icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-sakari.sms"
 
 [build-options]
 observabilityIncluded = true
 
-[platform.java21]
-graalvmCompatible = true
