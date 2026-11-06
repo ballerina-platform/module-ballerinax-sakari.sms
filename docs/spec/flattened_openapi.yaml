@@ -1,0 +1,5203 @@
+openapi: 3.0.3
+info:
+  title: Sakari
+  description: "Sakari is a business messaging platform for sending and tracking SMS\
+    \ and MMS at scale. This connector manages contacts, messages, conversations,\
+    \ templates, campaigns, drip campaigns, autoresponders, tracked links and webhooks\
+    \ in a Sakari account."
+  termsOfService: https://sakari.io/terms-service.html
+  contact:
+    email: help@sakari.io
+  version: 1.0.2
+externalDocs:
+  description: Find out more about Sakari
+  url: https://sakari.io
+servers:
+- url: https://api.sakari.io
+  description: Sakari Production
+tags:
+- name: accounts
+  description: "Create, modify or delete accounts"
+- name: contacts
+  description: "Create, modify or delete contacts"
+- name: autoresponders
+  description: "Create, modify, or delete autoresponders"
+- name: availablephonenumbers
+  description: Check for available phone numbers
+- name: messages
+  description: "Send or track messages to one contact, a group of contacts or your\
+    \ entire address book"
+- name: templates
+  description: Define reusable message or web templates
+- name: campaigns
+  description: "Define reusable message campaigns with a predefined contact list/filter,\
+    \ template and schedule"
+- name: conversations
+  description: Conversations group your message history with each contact into one
+    thread
+- name: tools
+  description: "Tools to assist with sending and receiving messages, such as file\
+    \ sharing, translation, etc."
+- name: webhooks
+  description: "Webhooks allow your own system to be automatically notified upon certin\
+    \ events, such as a new message received from one of your contacts or a status\
+    \ change notification for your messages"
+paths:
+  /v1/accounts/{accountId}/balance:
+    get:
+      tags:
+      - accounts
+      summary: Fetch account balance
+      description: Retrieves the current balance of the account.
+      operationId: balance.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      responses:
+        "200":
+          description: The account balance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/autoresponders:
+    get:
+      tags:
+      - autoresponders
+      summary: Fetch All Account Autoresponders
+      description: Lists the autoresponders configured for the account.
+      operationId: accounts.autoresponders.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      responses:
+        "200":
+          description: The account's autoresponders.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutorespondersResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+    post:
+      tags:
+      - autoresponders
+      summary: Create an Autoresponder
+      description: Creates an autoresponder that replies automatically to matching
+        incoming messages.
+      operationId: accounts.autoresponders.create
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Autoresponder to create.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autoresponder"
+        required: true
+      responses:
+        "200":
+          description: The created autoresponder.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutoresponderResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/autoresponders/{autoresponderId}:
+    get:
+      tags:
+      - autoresponders
+      summary: Fetch An Account Autoresponder
+      description: Retrieves an autoresponder by its ID.
+      operationId: accounts.autoresponders.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/autoresponderIdPath"
+      responses:
+        "200":
+          description: The requested autoresponder.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutoresponderResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+    put:
+      tags:
+      - autoresponders
+      summary: Update An Autoresponder
+      description: Updates an existing autoresponder.
+      operationId: accounts.autoresponders.update
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/autoresponderIdPath"
+      requestBody:
+        description: Autoresponder fields to update.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Autoresponder"
+        required: true
+      responses:
+        "200":
+          description: The updated autoresponder.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutoresponderResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+    delete:
+      tags:
+      - autoresponders
+      summary: Remove an autoresponder
+      description: Removes an autoresponder from the account.
+      operationId: accounts.autoresponders.remove
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/autoresponderIdPath"
+      responses:
+        "200":
+          description: Confirmation that the autoresponder was removed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/availablephonenumbers:
+    get:
+      tags:
+      - availablephonenumbers
+      summary: Check all available phone numbers
+      description: "Searches for phone numbers available to add to the account, filtered\
+        \ by country, type, area code and other criteria."
+      operationId: accounts.availablephonenumbers
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/country"
+      - $ref: "#/components/parameters/type"
+      - $ref: "#/components/parameters/postalCode"
+      - $ref: "#/components/parameters/features"
+      - $ref: "#/components/parameters/contains"
+      - $ref: "#/components/parameters/areaCode"
+      responses:
+        "200":
+          description: The phone numbers available to add to the account.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailablePhoneNumbersResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/contacts:
+    get:
+      tags:
+      - contacts
+      summary: Fetch contacts
+      description: "Lists the account's contacts, optionally filtered by name, mobile\
+        \ number, email or tags."
+      operationId: contacts.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/firstName"
+      - $ref: "#/components/parameters/lastName"
+      - $ref: "#/components/parameters/mobile"
+      - $ref: "#/components/parameters/email"
+      - $ref: "#/components/parameters/tags"
+      responses:
+        "200":
+          description: A page of contacts matching the filters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactsResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts',\n \
+          \ headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    post:
+      tags:
+      - contacts
+      summary: Create contact
+      description: "Creates a contact, or uploads several contacts from a CSV file,\
+        \ merging with existing contacts according to the merge strategy."
+      operationId: contacts.create
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: mergeStrategy
+        in: query
+        description: Determines how existing contacts with matching mobile numbers
+          are treated
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - append
+          - core
+          - remove
+      requestBody:
+        description: "Contact to create, as JSON, or a CSV file of contacts to upload."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+          text/csv:
+            schema:
+              type: string
+              example: |
+                country,firstName,lastName,email,mobile,jobTitle,Address,City,State,ZipCode US,Joe,Bloggs,joebloggs@sakari.co,123-456-7890,mover,123 Text Street,San Francisco,CA,12345
+      responses:
+        "201":
+          description: "The created contacts, or a summary of the uploaded contacts."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateContactResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "firstName": "Chris",
+            "lastName": "Thomson",
+            "mobile": {
+              "number": "+1234567890",
+              "country": "US"
+            }
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts',\n \
+          \ headers: {\n     Authorization: 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: \n   { firstName: 'Chris',\n     lastName:\
+          \ 'Thomson',\n     mobile: { number: '+1234567890', country: 'US' } },\n\
+          \  json: true };\n\nrequest(options, function (error, response, body) {\n\
+          \  if (error) throw new Error(error);\n\n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Content-Type' => 'application/json'\n  ));\n  \n  $request->setBody('{\n\
+          \    \"firstName\": \"Chris\",\n    \"lastName\": \"Thomson\",\n    \"mobile\"\
+          : {\n      \"number\": \"+1234567890\",\n      \"country\": \"US\"\n   \
+          \ }\n  }');\n  \n  try {\n    $response = $request->send();\n  \n    echo\
+          \ $response->getBody();\n  } catch (HttpException $ex) {\n    echo $ex;\n\
+          \  }\n"
+  /v1/accounts/{accountId}/contacts/{contactId}:
+    get:
+      tags:
+      - contacts
+      summary: Fetch contact by ID
+      description: Retrieves a contact by its ID.
+      operationId: contacts.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: contactId
+        in: path
+        description: ID of contact to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested contact.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    put:
+      tags:
+      - contacts
+      summary: Updates a contact
+      description: Updates an existing contact.
+      operationId: contacts.update
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: contactId
+        in: path
+        description: ID of contact
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Contact fields to update.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+        required: true
+      responses:
+        "200":
+          description: The updated contact.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X PUT \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "firstName": "Bob",
+            "lastName": "Thomson",
+            "mobile": {
+              "number": "+1234567890",
+              "country": "US"
+            }
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'PUT',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}',\n\
+          \  headers: \n   { 'Authorization': 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: \n   { firstName: 'Bob',\n     lastName:\
+          \ 'Thomson',\n     mobile: { number: '+1234567890', country: 'US' } },\n\
+          \  json: true };\n\nrequest(options, function (error, response, body) {\n\
+          \  if (error) throw new Error(error);\n\n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_PUT);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"firstName\": \"Bob\",\n    \"\
+          lastName\": \"Thomson\",\n    \"mobile\": {\n      \"number\": \"+1234567890\"\
+          ,\n      \"country\": \"US\"\n    }\n  }');\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    delete:
+      tags:
+      - contacts
+      summary: Deletes a contact
+      description: Deletes a contact from the account.
+      operationId: contacts.remove
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: contactId
+        in: path
+        description: Contact id to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Confirmation that the contact was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X DELETE \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'DELETE',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}',\n\
+          \  headers: \n   { 'Authorization': 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' } };\n\nrequest(options, function (error, response,\
+          \ body) {\n  if (error) throw new Error(error);\n\n  console.log(body);\n\
+          });\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/contacts/{{CONTACT_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_DELETE);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"firstName\": \"Chris\",\n    \"\
+          lastName\": \"Thomson\",\n    \"mobile\": {\n      \"number\": \"+1234567890\"\
+          ,\n      \"country\": \"US\"\n    }\n  }');\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/messages:
+    get:
+      tags:
+      - messages
+      summary: Fetch messages
+      description: "Lists the account's messages, optionally filtered by contact or\
+        \ conversation."
+      operationId: messages.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/contactId"
+      - $ref: "#/components/parameters/conversationId"
+      responses:
+        "200":
+          description: A page of messages matching the filters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessagesResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: |
+          var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages",
+            "method": "GET",
+            "headers": {
+              "Authorization": "Bearer {{TOKEN}}"
+            }
+          }
+
+          $.ajax(settings).done(function (response) {
+            console.log(response);
+          });
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    post:
+      tags:
+      - messages
+      summary: Send Messages
+      description: "Sends a message to the specified contacts, conversations or contacts\
+        \ matching the filters."
+      operationId: messages.send
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Message to send and the recipients to send it to.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessagesRequest"
+      responses:
+        "200":
+          description: A summary of the messages queued for sending.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendMessagesResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages \
+            -H 'Accept: application/json' \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "contacts": [{
+              "mobile": {
+                "number": "+1234567890",
+                "country": "US"
+              }
+            }],
+            "template": "Congratulations! You just sent your first message"
+          } '
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages',\n \
+          \ headers: \n   { 'Authorization': 'Bearer {{TOKEN}}',\n     Accept: 'application/json',\n\
+          \     'Content-Type': 'application/json' },\n  body: \n   { contacts: [\
+          \ { mobile: { number: '+1234567890', country: 'US' } } ],\n     template:\
+          \ 'Congratulations! You just sent your first message' },\n  json: true };\n\
+          \nrequest(options, function (error, response, body) {\n  if (error) throw\
+          \ new Error(error);\n\n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Accept' => 'application/json',\n\
+          \    'Content-Type' => 'application/json'\n  ));\n  \n  $request->setBody('{\n\
+          \    \"contacts\": [{\n      \"mobile\": {\n        \"number\": \"+1234567890\"\
+          ,\n        \"country\": \"US\"\n      }\n    }],\n    \"template\": \"Congratulations!\
+          \ You just sent your first message\"\n  } ');\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/messages/{messageId}:
+    get:
+      tags:
+      - messages
+      summary: Fetch message by id
+      description: Returns a single message by its ID.
+      operationId: messages.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: messageId
+        in: path
+        description: ID of message to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages/{{MESSAGE_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages/{{MESSAGE_ID}}',\n\
+          \  headers: \n   { 'Authorization': 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/messages/{{MESSAGE_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/templates:
+    get:
+      tags:
+      - templates
+      summary: Fetch templates
+      description: "Lists the account's message templates, optionally filtered by\
+        \ name."
+      operationId: templates.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/name"
+      responses:
+        "200":
+          description: A page of templates matching the filters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplatesResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates',\n\
+          \  headers: \n   { 'Authorization': 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    post:
+      tags:
+      - templates
+      summary: Create template
+      description: Creates a reusable message template.
+      operationId: templates.create
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Template to create.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Template"
+      responses:
+        "201":
+          description: The created template.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "name": "Test Template",
+            "template": "Hi {{ firstName }}, Welcome to Sakari!",
+            "type": "SMS"
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates',\n\
+          \  headers: \n   { 'Content-Type': 'application/json' },\n  body: \n   {\
+          \ name: 'Test Template',\n     template: 'Hi {{ firstName }}, Welcome to\
+          \ Sakari!',\n     type: 'SMS' },\n  json: true };\n\nrequest(options, function\
+          \ (error, response, body) {\n  if (error) throw new Error(error);\n\n  console.log(body);\n\
+          });\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"name\": \"Test Template\",\n \
+          \   \"template\": \"Hi {{ firstName }}, Welcome to Sakari!\",\n    \"type\"\
+          : \"SMS\"\n  }');\n  \n  try {\n    $response = $request->send();\n  \n\
+          \    echo $response->getBody();\n  } catch (HttpException $ex) {\n    echo\
+          \ $ex;\n  }\n"
+  /v1/accounts/{accountId}/templates/{templateId}:
+    get:
+      tags:
+      - templates
+      summary: Fetch template by ID
+      description: Retrieves a template by its ID.
+      operationId: templates.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: templateId
+        in: path
+        description: ID of template to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested template.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    put:
+      tags:
+      - templates
+      summary: Updates a template
+      description: Updates an existing template.
+      operationId: templates.update
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: templateId
+        in: path
+        description: ID of template
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Template fields to update.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Template"
+        required: true
+      responses:
+        "200":
+          description: The updated template.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X PUT \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "name": "Test Template",
+            "template": "Hi {{ firstName }}, Welcome to Sakari!",
+            "type": "SMS"
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\n\nvar options = { method: 'PUT',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: \n   { name: 'Test Template',\n     template:\
+          \ 'Hi {{ firstName }}, Welcome to Sakari!',\n     type: 'SMS' },\n  json:\
+          \ true };\n\nrequest(options, function (error, response, body) {\n  if (error)\
+          \ throw new Error(error);\n\n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_PUT);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"name\": \"Test Template\",\n \
+          \   \"template\": \"Hi {{ firstName }}, Welcome to Sakari!\",\n    \"type\"\
+          : \"SMS\"\n  }');\n  \n  try {\n    $response = $request->send();\n  \n\
+          \    echo $response->getBody();\n  } catch (HttpException $ex) {\n    echo\
+          \ $ex;\n  }\n"
+    delete:
+      tags:
+      - templates
+      summary: Deletes a template
+      description: Deletes a template from the account.
+      operationId: templates.remove
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: templateId
+        in: path
+        description: Template id to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Confirmation that the template was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X DELETE \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\n\nvar options = { method: 'DELETE',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/templates/{{TEMPLATE_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_DELETE);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/campaigns:
+    get:
+      tags:
+      - campaigns
+      summary: Fetch campaigns
+      description: "Lists the account's campaigns, optionally filtered by name."
+      operationId: campaigns.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/name"
+      responses:
+        "200":
+          description: A page of campaigns matching the filters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignsResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    post:
+      tags:
+      - campaigns
+      summary: Create campaign
+      description: "Creates a campaign with its contact filters, template and trigger."
+      operationId: campaigns.create
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Campaign to create.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignRequest"
+      responses:
+        "201":
+          description: The created campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "name": "Marketing Campaign",
+            "trigger": {
+              "code":"M"
+            },
+            "template":"Hi {{{contact.firstName}}}",
+            "reporting":{"when":"NoReport"}
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: \n   { name: 'Marketing Campaign',\n  \
+          \   trigger: { code: 'M' },\n     template: 'Hi {{{contact.firstName}}}',\n\
+          \     reporting: { when: 'NoReport' } },\n  json: true };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"name\": \"Marketing Campaign\"\
+          ,\n    \"trigger\": {\n      \"code\":\"M\"\n    },\n    \"template\":\"\
+          Hi {{{contact.firstName}}}\",\n    \"reporting\":{\"when\":\"NoReport\"\
+          }\n  }');\n  \n  try {\n    $response = $request->send();\n  \n    echo\
+          \ $response->getBody();\n  } catch (HttpException $ex) {\n    echo $ex;\n\
+          \  }\n"
+  /v1/accounts/{accountId}/quickcampaigns:
+    post:
+      tags:
+      - campaigns
+      summary: Create and Execute a campaign
+      description: Creates a campaign for a contact list and executes it immediately
+        or at the scheduled time.
+      operationId: campaigns.createandexecute
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Campaign to create and execute.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuickCampaignRequest"
+      responses:
+        "200":
+          description: The created campaign and its execution.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuickCampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/campaigns/{campaignId}:
+    get:
+      tags:
+      - campaigns
+      summary: Fetch campaign by ID
+      description: Retrieves a campaign by its ID.
+      operationId: campaigns.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: campaignId
+        in: path
+        description: ID of campaign to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    put:
+      tags:
+      - campaigns
+      summary: Updates a campaign
+      description: Updates an existing campaign.
+      operationId: campaigns.update
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: campaignId
+        in: path
+        description: ID of campaign
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Campaign fields to update.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignRequest"
+        required: true
+      responses:
+        "200":
+          description: The updated campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "name": "Marketing Campaign",
+            "trigger": {
+              "code":"M"
+            },
+            "template":"Hi {{{contact.firstName}}}",
+            "reporting":{"when":"NoReport"}
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: \n   { name: 'Marketing Campaign',\n  \
+          \   trigger: { code: 'M' },\n     template: 'Hi {{{contact.firstName}}}',\n\
+          \     reporting: { when: 'NoReport' } },\n  json: true };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"name\": \"Marketing Campaign\"\
+          ,\n    \"trigger\": {\n      \"code\":\"M\"\n    },\n    \"template\":\"\
+          Hi {{{contact.firstName}}}\",\n    \"reporting\":{\"when\":\"NoReport\"\
+          }\n  }');\n  \n  try {\n    $response = $request->send();\n  \n    echo\
+          \ $response->getBody();\n  } catch (HttpException $ex) {\n    echo $ex;\n\
+          \  }\n"
+    delete:
+      tags:
+      - campaigns
+      summary: Deletes a campaign
+      description: Deletes a campaign from the account.
+      operationId: campaigns.remove
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: campaignId
+        in: path
+        description: Campaign id to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Confirmation that the campaign was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X DELETE \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'DELETE',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/campaigns/{{CAMPAIGN_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_DELETE);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/conversations:
+    get:
+      tags:
+      - conversations
+      summary: Fetch conversations
+      description: Lists the account's conversations.
+      operationId: conversations.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: A page of conversations.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationsResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/conversations/{conversationId}:
+    get:
+      tags:
+      - conversations
+      summary: Fetch conversation by ID
+      description: Retrieves a conversation by its ID.
+      operationId: conversations.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: conversationId
+        in: path
+        description: ID of conversation to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationResponse"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}}',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}}');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/conversations/{conversationId}/close:
+    put:
+      tags:
+      - conversations
+      summary: Closes a conversation
+      description: Closes an open conversation.
+      operationId: conversations.close
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: conversationId
+        in: path
+        description: ID of conversation
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The closed conversation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationResponse"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}}/close \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'GET',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}}/close',\n\
+          \  headers: \n   { Authorization: 'Bearer {{TOKEN}}' } };\n\nrequest(options,\
+          \ function (error, response, body) {\n  if (error) throw new Error(error);\n\
+          \n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/conversations/{{CONVERSATION_ID}}/close');\n\
+          \  $request->setMethod(HTTP_METH_PUT);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"name\": \"Test Template\",\n \
+          \   \"template\": \"Hi {{ firstName }}, Welcome to Sakari!\",\n    \"type\"\
+          : \"SMS\"\n  }');\n  \n  try {\n    $response = $request->send();\n  \n\
+          \    echo $response->getBody();\n  } catch (HttpException $ex) {\n    echo\
+          \ $ex;\n  }\n"
+  /v1/accounts/{accountId}/links:
+    get:
+      tags:
+      - links
+      summary: Fetch links
+      description: "Lists the account's tracked links, optionally filtered by a search\
+        \ term."
+      operationId: links.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/q"
+      responses:
+        "200":
+          description: A page of tracked links matching the search.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinksResponse"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/links/{linkId}:
+    get:
+      tags:
+      - links
+      summary: Fetch link by ID
+      description: Retrieves a tracked link by its ID.
+      operationId: links.fetchById
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/linkIdPath"
+      responses:
+        "200":
+          description: The requested tracked link.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinkResponse"
+      security:
+      - sakari_auth: []
+    delete:
+      tags:
+      - links
+      summary: Delete link by ID
+      description: Deletes a tracked link.
+      operationId: links.deleteById
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/linkIdPath"
+      responses:
+        "204":
+          description: Confirmation that the tracked link was deleted.
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/links/{linkId}/sources:
+    get:
+      tags:
+      - links
+      summary: Fetch link sources
+      description: Lists the click sources of a tracked link with their statistics.
+      operationId: links.fetchSources
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/linkIdPath"
+      - name: sources
+        in: query
+        description: Sources to analyse
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The click sources of the tracked link.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinkSourcesResponse"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/links/{linkId}/sources/{sourceId}:
+    get:
+      tags:
+      - links
+      summary: Fetch link source by ID
+      description: Retrieves a click source of a tracked link by its ID.
+      operationId: links.fetchSourceById
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: linkId
+        in: path
+        description: ID of link to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: sourceId
+        in: path
+        description: Source to analyse
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The requested link source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinkSourceResponse"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/links/{linkId}/sources/{sourceId}/stats:
+    get:
+      tags:
+      - links
+      summary: Fetch link source statistics by ID
+      description: Retrieves click statistics over time for a source of a tracked
+        link.
+      operationId: links.fetchSourceStatsById
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: linkId
+        in: path
+        description: ID of link to return
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: sourceId
+        in: path
+        description: Source to analyse
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Click statistics over time for the link source.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LinkSourceStatsResponse"
+      security:
+      - sakari_auth: []
+  /v1/tools/sharefile:
+    post:
+      tags:
+      - tools
+      summary: Share file - use to host a file and generate a short link to be used
+        directly in a message or as a link to media for a MMS
+      description: Uploads a file and returns a short link that can be used in a message
+        or as MMS media.
+      operationId: tools.shareFile
+      requestBody:
+        description: File to share.
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ToolsSharefileBody"
+        required: true
+      responses:
+        "200":
+          description: The short link to the shared file.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShareFileResponse"
+        "4XX":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponse"
+        "5XX":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BasicResponse"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/webhooks:
+    get:
+      tags:
+      - webhooks
+      summary: Fetch active webhooks
+      description: "When messages are acknowledge by carriers, a notification is sent\
+        \ to the specified URL"
+      operationId: webhooks.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      responses:
+        "200":
+          description: The account's webhook subscriptions.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhooksResponse"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X GET \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -d '{
+            "url": "https://requestbin.io"
+          }'
+      - lang: JavaScript
+        source: |
+          var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks",
+            "method": "GET",
+            "headers": {
+              "Authorization": "Bearer {{TOKEN}}"
+            },
+            "data": "{\n\t\"url\": \"https://requestbin.io\"\n}"
+          }
+
+          $.ajax(settings).done(function (response) {
+            console.log(response);
+          });
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks');\n\
+          \  $request->setMethod(HTTP_METH_GET);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  $request->setBody('{\n\
+          \    \"url\": \"https://requestbin.io\"\n  }');\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+    post:
+      tags:
+      - webhooks
+      summary: Subscribe to message events
+      description: "When messages are acknowledge by carriers, a notification is sent\
+        \ to the specified URL"
+      operationId: webhooks.subscribe
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Callback URL and the event types to subscribe to.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountIdWebhooksBody"
+        required: true
+      responses:
+        "200":
+          description: The created webhook subscription.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookResponse"
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X POST \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks \
+            -H 'Authorization: Bearer {{TOKEN}}' \
+            -H 'Content-Type: application/json' \
+            -d '{
+            "url": "https://requestbin.io",
+            "eventTypes": ["message-received"]
+          }'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'POST',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks',\n \
+          \ headers: \n   { Authorization: 'Bearer {{TOKEN}}',\n     'Content-Type':\
+          \ 'application/json' },\n  body: { url: 'https://requestbin.io', eventTypes:\
+          \ [ 'message-received' ] },\n  json: true };\n\nrequest(options, function\
+          \ (error, response, body) {\n  if (error) throw new Error(error);\n\n  console.log(body);\n\
+          });\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks');\n\
+          \  $request->setMethod(HTTP_METH_POST);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}',\n    'Content-Type' => 'application/json'\n\
+          \  ));\n  \n  $request->setBody('{\n    \"url\": \"https://requestbin.io\"\
+          ,\n    \"eventTypes\": [\"message-received\"]\n  }');\n  \n  try {\n   \
+          \ $response = $request->send();\n  \n    echo $response->getBody();\n  }\
+          \ catch (HttpException $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/webhooks/{url}:
+    delete:
+      tags:
+      - webhooks
+      summary: Unsubscribe to message events
+      description: Delete subscription for receiving notifications
+      operationId: webhooks.unsubscribe
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - name: url
+        in: path
+        description: URL-encoded callback URL of the webhook subscription to remove
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: The webhook subscription was deleted.
+      security:
+      - sakari_auth: []
+      x-code-samples:
+      - lang: CURL
+        source: |
+          curl -X DELETE \
+            https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks/{{URL_ENCODED CALLBACK_URL}} \
+            -H 'Authorization: Bearer {{TOKEN}}'
+      - lang: JavaScript
+        source: "var request = require(\"request\");\nvar options = { method: 'DELETE',\n\
+          \  url: 'https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks/{{URL_ENCODED\
+          \ CALLBACK_URL}}',\n  headers: \n   { Authorization: 'Bearer {{TOKEN}}'\
+          \ };\n\nrequest(options, function (error, response, body) {\n  if (error)\
+          \ throw new Error(error);\n\n  console.log(body);\n});\n"
+      - lang: PHP
+        source: "<?php\n  $request = new HttpRequest();\n  $request->setUrl('https://api.sakari.io/v1/accounts/{{ACCOUNT_ID}}/webhooks/{{URL_ENCODED\
+          \ CALLBACK_URL}}');\n  $request->setMethod(HTTP_METH_DELETE);\n  \n  $request->setHeaders(array(\n\
+          \    'Authorization' => 'Bearer {{TOKEN}}'\n  ));\n  \n  try {\n    $response\
+          \ = $request->send();\n  \n    echo $response->getBody();\n  } catch (HttpException\
+          \ $ex) {\n    echo $ex;\n  }\n"
+  /v1/accounts/{accountId}/dripcampaigns:
+    get:
+      tags:
+      - dripcampaigns
+      summary: Fetch Account Drip Campaigns
+      description: Lists the account's drip campaigns.
+      operationId: accounts.dripcampaigns.fetchAll
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/offset"
+      - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: A page of drip campaigns.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignsResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+    post:
+      tags:
+      - dripcampaigns
+      summary: Create a Drip Campaign
+      description: Creates a drip campaign that sends a sequence of timed messages
+        after a trigger event.
+      operationId: accounts.dripcampaigns.create
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      requestBody:
+        description: Drip campaign to create.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpdateDripCampaign"
+        required: true
+      responses:
+        "200":
+          description: The created drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}:
+    get:
+      tags:
+      - dripcampaigns
+      summary: Fetch a drip campaign
+      description: Retrieves a drip campaign by its ID.
+      operationId: accounts.dripcampaigns.fetch
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: The requested drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+    put:
+      tags:
+      - dripcampaigns
+      summary: Edit a Drip Campaign
+      description: Updates an existing drip campaign.
+      operationId: accounts.dripcampaigns.update
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      requestBody:
+        description: Updated drip campaign.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpdateDripCampaign"
+        required: true
+      responses:
+        "200":
+          description: The updated drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+    delete:
+      tags:
+      - dripcampaigns
+      summary: Deletes a drip campaign
+      description: Deletes a drip campaign.
+      operationId: accounts.dripcampaigns.delete
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: Confirmation that the drip campaign was deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}/duplicate:
+    post:
+      tags:
+      - dripcampaigns
+      summary: Duplicate a Drip Campaign
+      description: Creates a copy of an existing drip campaign.
+      operationId: accounts.dripcampaigns.duplicate
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: The new copy of the drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}/activate:
+    put:
+      tags:
+      - dripcampaigns
+      summary: Activate a Drip Campaign
+      description: Activates a drip campaign so that it starts enrolling contacts.
+      operationId: accounts.dripcampaigns.activate
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: Confirmation that the drip campaign was activated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}/deactivate:
+    put:
+      tags:
+      - dripcampaigns
+      summary: Deactivate a drip campaign
+      description: Deactivates a drip campaign so that it stops enrolling contacts.
+      operationId: accounts.dripcampaigns.deactivate
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: Confirmation that the drip campaign was deactivated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}/migrate:
+    put:
+      tags:
+      - dripcampaigns
+      summary: Transform a drip campaign to a workflow
+      description: Converts a drip campaign into a workflow.
+      operationId: accounts.dripcampaigns.migrate
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      responses:
+        "200":
+          description: The workflow created from the drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+  /v1/accounts/{accountId}/dripcampaigns/{dripCampaignId}/executions:
+    get:
+      tags:
+      - dripcampaigns
+      summary: Fetch executions for dripcampaigns
+      description: "Lists the contacts' executions of a drip campaign, optionally\
+        \ for a specific workflow version."
+      operationId: accounts.dripcampaigns.executions
+      parameters:
+      - $ref: "#/components/parameters/accountIdPath"
+      - $ref: "#/components/parameters/dripCampaignIdPath"
+      - $ref: "#/components/parameters/versionId"
+      - $ref: "#/components/parameters/offset"
+      responses:
+        "200":
+          description: The executions of the drip campaign.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DripCampaignExecutionsResponse"
+        "4XX":
+          $ref: "#/components/responses/4XX"
+        "5XX":
+          $ref: "#/components/responses/5XX"
+      security:
+      - sakari_auth: []
+components:
+  schemas:
+    QuickCampaignResponse:
+      required:
+      - data
+      description: Response containing a newly created campaign and its execution.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              campaign:
+                $ref: "#/components/schemas/Campaign"
+              job:
+                $ref: "#/components/schemas/CampaignExecution"
+            description: The created campaign and its execution.
+    WorkflowProperty:
+      required:
+      - dataType
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the property.
+        dataType:
+          type: string
+          description: Data type of the property.
+          enum:
+          - string
+          - number
+          - boolean
+          - date
+        created:
+          $ref: "#/components/schemas/WorkflowPropertyCreated"
+      description: A named property that holds a value while a workflow runs.
+    DripCampaignExecution:
+      required:
+      - entered
+      - id
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the execution.
+          readOnly: true
+        status:
+          type: string
+          description: Status of the contact in the drip campaign.
+        contact:
+          $ref: "#/components/schemas/Contact"
+        entered:
+          type: string
+          description: Date and time the contact entered the drip campaign.
+          format: date-time
+      description: A contact's progress through a drip campaign.
+    LinkSource:
+      required:
+      - name
+      - stats
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the link source.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the link source.
+          readOnly: true
+        stats:
+          $ref: "#/components/schemas/LinkSourceStats"
+      description: "A source of clicks on a tracked link, with its click statistics."
+    Autoresponder:
+      required:
+      - id
+      - match
+      - response
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the autoresponder.
+          readOnly: true
+        match:
+          type: string
+          description: Text or pattern that incoming messages are matched against.
+        response:
+          type: string
+          description: Reply sent when an incoming message matches.
+        advanced:
+          type: boolean
+          description: Whether advanced matching settings are used.
+          default: false
+        scheduleType:
+          type: string
+          description: "When the autoresponder is active: out of office, in office\
+            \ or on a custom schedule."
+          enum:
+          - OOO
+          - in office
+          - custom
+        customObject:
+          type: object
+          description: Custom schedule settings used when the schedule type is custom.
+        group:
+          type: string
+          description: Group whose incoming messages the autoresponder applies to.
+      description: A rule that automatically replies to incoming messages matching
+        a pattern.
+    WorkflowVersion:
+      required:
+      - created
+      - definition
+      - id
+      - updated
+      - version
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the version.
+        name:
+          type: string
+          description: Name of the version.
+        definition:
+          $ref: "#/components/schemas/WorkflowDefinition"
+        readonly:
+          type: boolean
+          description: Whether the version is read-only.
+        active:
+          type: string
+          description: Date and time the version was activated.
+          format: date-time
+        lastActive:
+          type: string
+          description: Date and time the version was last active.
+          format: date-time
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A version of a workflow and its definition.
+    WorkflowProperties:
+      type: array
+      description: Properties declared on a workflow.
+      items:
+        $ref: "#/components/schemas/WorkflowProperty"
+    WorkflowCondition:
+      required:
+      - attribute
+      - comparator
+      - value
+      type: object
+      properties:
+        attribute:
+          $ref: "#/components/schemas/WorkflowDataReference"
+        comparator:
+          type: string
+          description: Comparison operator to apply.
+        value:
+          description: Value or values to compare against.
+          oneOf:
+          - type: array
+            items:
+              type: string
+          - type: array
+            items:
+              type: number
+          - type: string
+          - type: number
+      description: A comparison applied to a workflow data reference.
+    UpdatedBy:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the user who made the change.
+        name:
+          type: string
+          description: Full name of the user who made the change.
+          example: Joe Bloggs
+        firstName:
+          type: string
+          description: First name of the user who made the change.
+          example: Joe
+        lastName:
+          type: string
+          description: Last name of the user who made the change.
+          example: Bloggs
+        email:
+          type: string
+          description: Email address of the user who made the change.
+          example: joe@bloggs.com
+        source:
+          type: string
+          description: Source through which the change was made.
+        subSource:
+          type: string
+          description: More specific source through which the change was made.
+      description: The user or process that made a change to a record.
+    PaginatedResponse:
+      required:
+      - pagination
+      description: "Base envelope for list results, adding pagination details to the\
+        \ basic response."
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          pagination:
+            $ref: "#/components/schemas/Pagination"
+    SendMessagesRequest:
+      type: object
+      properties:
+        conversations:
+          type: array
+          description: List of conversation ids to send messages to
+          items:
+            type: string
+        contacts:
+          type: array
+          description: Contacts to send the message to.
+          items:
+            $ref: "#/components/schemas/Contact"
+        filters:
+          $ref: "#/components/schemas/SendMessagesRequestFilters"
+        phoneNumberFilter:
+          $ref: "#/components/schemas/SendMessagesRequestPhoneNumberFilter"
+        template:
+          type: string
+          description: "Message text to send, which may include contact attribute\
+            \ placeholders."
+        type:
+          type: string
+          description: Type of message to send.
+          enum:
+          - SMS
+          - MMS
+        media:
+          type: array
+          description: List of media objects to attach to message
+          items:
+            $ref: "#/components/schemas/SendMessagesRequestMedia"
+      description: "Request payload for sending a message to contacts, conversations\
+        \ or a filtered set of contacts."
+    DripCampaignsResponse:
+      description: Paginated response containing a list of drip campaigns.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            type: array
+            description: The drip campaigns in this page of results.
+            items:
+              $ref: "#/components/schemas/DripCampaign"
+    LinkClickedNodeConfig:
+      type: object
+      properties:
+        link:
+          $ref: "#/components/schemas/Link"
+        timeout:
+          $ref: "#/components/schemas/Delay"
+      description: Configuration of a node that waits for a tracked link to be clicked.
+    VoiceChannel:
+      description: Voice channel settings for a phone number or sender.
+      allOf:
+      - $ref: "#/components/schemas/Channel"
+      - type: object
+        properties:
+          incoming:
+            type: object
+            properties:
+              action:
+                type: string
+                description: Action taken for incoming calls.
+                enum:
+                - forward
+                - voicemail
+              forwardTo:
+                type: string
+                description: Phone number incoming calls are forwarded to.
+              message:
+                type: string
+                description: Message played to callers.
+              transcribe:
+                type: boolean
+                description: Whether voicemails are transcribed.
+            description: How incoming calls are handled.
+          features:
+            type: array
+            description: Voice features enabled for the channel.
+            items:
+              type: string
+    ContactCreatedTriggerConfig:
+      type: object
+      description: Configuration of a trigger that starts a workflow when a contact
+        is created.
+    SendMessageNodeConfigMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Text of the message.
+        media:
+          type: array
+          description: List of media objects attached to message
+          items:
+            $ref: "#/components/schemas/Media"
+      description: Content of the message.
+    CampaignPhoneNumberFilterGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the group.
+      description: Group whose phone numbers send the campaign.
+    DripCampaign:
+      required:
+      - messages
+      - name
+      - trigger
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the drip campaign.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the drip campaign.
+        description:
+          type: string
+          description: Description of the drip campaign.
+        trigger:
+          $ref: "#/components/schemas/DripCampaignTrigger"
+        messages:
+          type: array
+          description: "Messages sent by the drip campaign, in order."
+          items:
+            $ref: "#/components/schemas/DripCampaignMessage"
+        active:
+          type: boolean
+          description: Whether the drip campaign is active.
+          readOnly: true
+        maxDuration:
+          type: number
+          description: Maximum duration of the drip campaign.
+          readOnly: true
+        stats:
+          $ref: "#/components/schemas/DripCampaignStats"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A drip campaign that sends a sequence of timed messages to contacts
+        after a trigger event.
+    DripCampaignMessage:
+      required:
+      - delay
+      - message
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the drip campaign message.
+          readOnly: true
+        message:
+          type: string
+          description: Text of the message.
+        media:
+          type: array
+          description: Media files attached to the message.
+          items:
+            $ref: "#/components/schemas/Media"
+        delay:
+          $ref: "#/components/schemas/Delay"
+        stats:
+          $ref: "#/components/schemas/DripCampaignStats"
+      description: "A message sent as one step of a drip campaign, after a delay."
+    LinkSourceResponse:
+      required:
+      - data
+      description: Response containing a single click source of a tracked link.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/LinkSource"
+    WorkflowNodePropertyBaseObject:
+      required:
+      - type
+      type: object
+      properties:
+        label:
+          type: string
+          description: Display label of the property.
+        helperText:
+          type: string
+          description: Help text shown for the property.
+        link:
+          type: string
+          description: URL of further information about the property.
+        type:
+          $ref: "#/components/schemas/WorkflowNodePropertyType"
+        mandatory:
+          type: boolean
+          description: Whether the property must be set.
+        args:
+          type: array
+          description: Additional arguments for the input control.
+          items:
+            type: string
+        options:
+          type: array
+          description: Options that can be selected for the property.
+          items:
+            $ref: "#/components/schemas/SelectOption"
+        min:
+          type: number
+          description: Minimum allowed value.
+        max:
+          type: number
+          description: Maximum allowed value.
+        defaultValue:
+          description: Default value of the property.
+          anyOf:
+          - type: string
+          - type: boolean
+          - type: number
+          - type: object
+      description: Base settings shared by workflow node properties.
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the operation succeeded.
+      description: Confirmation that the requested operation completed.
+    SendMessagesRequestPhoneNumberFilterGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the group.
+      description: Group whose phone numbers send the message.
+    ChoiceNodeConfig:
+      required:
+      - property
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/WorkflowDataReference"
+      description: Configuration of a node that branches on the value of a property.
+    GroupOfficeHours:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether office hours are enabled.
+        timezone:
+          type: string
+          description: Time zone of the office hours.
+        times:
+          $ref: "#/components/schemas/Times"
+      description: Office hours configured for a group.
+    CampaignResponse:
+      required:
+      - data
+      description: Response containing a single campaign.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Campaign"
+    Workflow:
+      required:
+      - account
+      - created
+      - id
+      - name
+      - updated
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the workflow.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the workflow.
+        versions:
+          type: array
+          description: Versions of the workflow.
+          items:
+            $ref: "#/components/schemas/WorkflowVersion"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: An automated workflow and its versions.
+    WebhookResponse:
+      required:
+      - data
+      description: Response containing a single webhook subscription.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Webhook"
+    MessageReceivedNodeConfig:
+      type: object
+      properties:
+        group:
+          $ref: "#/components/schemas/Group"
+        timeout:
+          $ref: "#/components/schemas/Delay"
+      description: Configuration of a node that waits for a reply message.
+    WebhooksResponse:
+      required:
+      - data
+      description: Paginated response containing a list of webhook subscriptions.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The webhook subscriptions in this page of results.
+            items:
+              $ref: "#/components/schemas/Webhook"
+    GoogleSheetTab:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Unique identifier of the tab.
+        name:
+          type: string
+          description: Name of the tab.
+      description: A tab in a Google Sheets spreadsheet.
+    Sender:
+      required:
+      - created
+      - id
+      - identifier
+      - status
+      - subType
+      - type
+      - updated
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the sender.
+        type:
+          type: string
+          description: Type of the sender.
+          enum:
+          - phonenumber
+        subType:
+          type: string
+          description: Subtype of the sender.
+        status:
+          type: string
+          description: Status of the sender.
+        identifier:
+          type: string
+          description: "Identifier of the sender, such as the phone number."
+        channels:
+          $ref: "#/components/schemas/PhoneNumberChannels"
+        groups:
+          type: array
+          description: Groups the sender is assigned to.
+          items:
+            $ref: "#/components/schemas/BasicGroup"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: "A sender identity, such as a phone number, used to send messages."
+    SendMessagesResponse:
+      required:
+      - data
+      description: Response summarising a request to send messages.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              messages:
+                type: array
+                description: Messages created by the request.
+                items:
+                  $ref: "#/components/schemas/Message"
+              jobId:
+                type: string
+                description: ID of the job that sends the messages.
+              requested:
+                type: integer
+                description: Number of recipients requested.
+              valid:
+                type: integer
+                description: Number of valid recipients.
+              invalid:
+                type: array
+                description: Contacts that could not be sent to.
+                items:
+                  $ref: "#/components/schemas/Contact"
+              estimatedPrice:
+                type: number
+                description: Estimated total price of the messages.
+                format: double
+            description: Summary of the send request.
+    WorkflowPropertyCreated:
+      type: object
+      properties:
+        at:
+          type: string
+          description: Date and time the property was created.
+          format: date-time
+      description: When the property was created.
+    CampaignsResponse:
+      required:
+      - data
+      description: Paginated response containing a list of campaigns.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The campaigns in this page of results.
+            items:
+              $ref: "#/components/schemas/Campaign"
+    ListSource:
+      required:
+      - id
+      - integration
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the list in the external source.
+        integration:
+          type: string
+          description: Integration the list is synchronised from.
+        lastSynced:
+          type: string
+          description: When the list was last synchronised.
+      description: External source the list is synchronised from.
+    ContactFilter:
+      type: object
+      properties:
+        q:
+          type: string
+          description: Search term that contacts must match.
+        attributes:
+          type: array
+          description: Attribute conditions that contacts must meet.
+          items:
+            $ref: "#/components/schemas/Condition"
+        list:
+          type: string
+          description: ID of a list that contacts must belong to.
+        valid:
+          type: boolean
+          description: Whether to include only valid contacts.
+        invalid:
+          type: boolean
+          description: Whether to include only invalid contacts.
+        blocked:
+          type: boolean
+          description: Whether to include only blocked contacts.
+        unblocked:
+          type: boolean
+          description: Whether to include only unblocked contacts.
+        optIn:
+          type: boolean
+          description: Whether to include only contacts that have opted in.
+      description: "Criteria that select contacts, used to define the members of a\
+        \ list."
+    ToolsSharefileBody:
+      type: object
+      properties:
+        media:
+          type: string
+          format: binary
+    AvailablePhoneNumber:
+      type: object
+      properties:
+        country:
+          type: string
+          description: Country of the phone number.
+        number:
+          type: string
+          description: The available phone number.
+        price:
+          type: string
+          description: Price of the phone number.
+        type:
+          type: string
+          description: Type of the phone number.
+        features:
+          type: array
+          description: Features supported by the phone number.
+          items:
+            type: string
+      description: A phone number that is available to be added to the account.
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the person.
+          readOnly: true
+        email:
+          type: string
+          description: Email address of the person.
+          example: chris@sakari.io
+        firstName:
+          type: string
+          description: First name of the person.
+          example: Chris
+        lastName:
+          type: string
+          description: Last name of the person.
+          example: Bloggs
+        mobile:
+          $ref: "#/components/schemas/InternationalNumber"
+      description: "Basic details of a person, such as a contact or a user."
+    ListNodeConfig:
+      type: object
+      properties:
+        contact:
+          $ref: "#/components/schemas/WorkflowDataReference"
+        list:
+          $ref: "#/components/schemas/List"
+      description: Configuration of a node that acts on a contact's membership of
+        a list.
+    Link:
+      required:
+      - destinationUrl
+      - keyId
+      - shortenedUrl
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the link.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the link.
+        keyId:
+          type: string
+          description: Key that identifies the link in its shortened URL.
+          readOnly: true
+        domain:
+          $ref: "#/components/schemas/LinkDomain"
+        destinationUrl:
+          type: string
+          description: URL the link redirects to.
+        shortenedUrl:
+          type: string
+          description: Shortened URL of the link.
+          readOnly: true
+        contactTracking:
+          type: boolean
+          description: Whether clicks are tracked per contact.
+        sourceTracking:
+          type: boolean
+          description: Whether clicks are tracked per source.
+        stats:
+          $ref: "#/components/schemas/LinkStats"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A tracked short link that records clicks on a destination URL.
+    LinkResponse:
+      required:
+      - data
+      description: Response containing a single tracked link.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Link"
+    Group:
+      description: "A group of phone numbers, senders and users that send and receive\
+        \ messages together."
+      allOf:
+      - $ref: "#/components/schemas/BasicGroup"
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Unique identifier of the group.
+          name:
+            type: string
+            description: Name of the group.
+          phoneNumbers:
+            type: array
+            description: Phone numbers assigned to the group.
+            items:
+              $ref: "#/components/schemas/PhoneNumber"
+          notifications:
+            type: array
+            description: Notification destinations configured for the group.
+            items:
+              $ref: "#/components/schemas/GroupNotification"
+          tags:
+            type: array
+            description: Tags assigned to the group.
+            items:
+              type: string
+          users:
+            type: array
+            description: Users who belong to the group.
+            items:
+              $ref: "#/components/schemas/User"
+          senders:
+            type: array
+            description: Senders assigned to the group.
+            items:
+              $ref: "#/components/schemas/Sender"
+          officeHours:
+            $ref: "#/components/schemas/GroupOfficeHours"
+          isDefault:
+            type: boolean
+            description: Whether this is the account's default group.
+          useSharedPool:
+            type: boolean
+            description: Whether the group sends from the shared phone number pool.
+    GoogleSheet:
+      type: object
+      properties:
+        connection:
+          $ref: "#/components/schemas/UserIntegration"
+        id:
+          type: string
+          description: Unique identifier of the spreadsheet.
+        name:
+          type: string
+          description: Name of the spreadsheet.
+        tabs:
+          type: array
+          description: Tabs in the spreadsheet.
+          items:
+            $ref: "#/components/schemas/GoogleSheetTab"
+        tab:
+          $ref: "#/components/schemas/GoogleSheetTab"
+      description: A Google Sheets spreadsheet used by a workflow node.
+    TemplatesResponse:
+      required:
+      - data
+      description: Paginated response containing a list of templates.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The templates in this page of results.
+            items:
+              $ref: "#/components/schemas/Template"
+    MessagesResponse:
+      required:
+      - data
+      description: Paginated response containing a list of messages.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The messages in this page of results.
+            items:
+              $ref: "#/components/schemas/Message"
+    Conversation:
+      required:
+      - closed
+      - lastMessage
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the conversation.
+          readOnly: true
+        contact:
+          $ref: "#/components/schemas/Contact"
+        closed:
+          type: string
+          description: Date and time the conversation was closed.
+          format: date-time
+          readOnly: true
+        lastMessage:
+          $ref: "#/components/schemas/Message"
+        phoneNumber:
+          $ref: "#/components/schemas/PhoneNumber"
+        group:
+          $ref: "#/components/schemas/BasicGroup"
+        unread:
+          type: array
+          description: Identifiers that track unread messages in the conversation.
+          items:
+            type: string
+        type:
+          type: string
+          description: Type of the conversation.
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A message thread between the account and a single contact.
+    WorkflowNodeProperty:
+      description: A configurable property of a workflow node type.
+      allOf:
+      - $ref: "#/components/schemas/WorkflowNodePropertyBaseObject"
+      - required:
+        - name
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of the property.
+          conditions:
+            type: array
+            description: Conditions that control when the property applies.
+            items:
+              $ref: "#/components/schemas/WorkflowNodePropertyCondition"
+    WorkflowNode:
+      required:
+      - config
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the node.
+        type:
+          $ref: "#/components/schemas/WorkflowNodeType"
+        config:
+          $ref: "#/components/schemas/WorkflowNodeConfig"
+      description: A trigger or action step in a workflow.
+    LinkDomain:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the domain.
+        name:
+          type: string
+          description: Name of the domain.
+      description: Domain used for the shortened URL.
+      readOnly: true
+    DelayNodeConfig:
+      type: object
+      properties:
+        delay:
+          $ref: "#/components/schemas/AdvancedDelay"
+      description: Configuration of a node that waits before continuing.
+    DataType:
+      type: string
+      description: Data type of a property value.
+      enum:
+      - string
+      - boolean
+      - number
+      - date
+    TemplateResponse:
+      required:
+      - data
+      description: Response containing a single template.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Template"
+    Property:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the property.
+        label:
+          type: string
+          description: Display label of the property.
+        dataType:
+          $ref: "#/components/schemas/DataType"
+      description: A contact property that can be updated.
+    LinkStats:
+      type: object
+      properties:
+        totalClicks:
+          type: number
+          description: Total number of clicks recorded.
+        uniqueClicks:
+          type: number
+          description: Number of unique clicks recorded.
+        ctr:
+          type: number
+          description: Click-through rate.
+      description: Click statistics for the link.
+      readOnly: true
+    DripCampaignResponse:
+      description: Response containing a single drip campaign.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/DripCampaign"
+    AdvancedDelayTime:
+      required:
+      - hour
+      - minute
+      type: object
+      properties:
+        hour:
+          type: number
+          description: Hour of the day.
+        minute:
+          type: number
+          description: Minute of the hour.
+      description: Time of day at which a delayed step continues.
+    CreateUpdateDripCampaign:
+      description: Request payload for creating or updating a drip campaign.
+      allOf:
+      - $ref: "#/components/schemas/DripCampaign"
+      - type: object
+        properties:
+          activate:
+            type: boolean
+            description: Whether to activate the drip campaign after saving it.
+    ContactResponse:
+      required:
+      - data
+      description: Response containing a single contact.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Contact"
+    CampaignExecution:
+      required:
+      - created
+      - failures
+      - id
+      - invalid
+      - price
+      - status
+      - submitted
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the execution.
+          readOnly: true
+        submitted:
+          type: number
+          description: Number of messages submitted.
+        status:
+          type: string
+          description: Status of the execution.
+        price:
+          type: number
+          description: Total price of the execution.
+        failures:
+          type: number
+          description: Number of messages that failed.
+        invalid:
+          type: array
+          description: Contacts that could not be sent to.
+          items:
+            type: object
+        created:
+          $ref: "#/components/schemas/Updated"
+      description: A single run of a campaign and its delivery results.
+    ContactList:
+      description: "A list that a contact belongs to, with the contact's opt-in and\
+        \ opt-out dates for that list."
+      allOf:
+      - $ref: "#/components/schemas/List"
+      - type: object
+        properties:
+          optIn:
+            type: string
+            description: Date and time the contact opted in to the list.
+            format: date-time
+          optOut:
+            type: string
+            description: Date and time the contact opted out of the list.
+            format: date-time
+    TemplateType:
+      type: string
+      description: Type of a template.
+      example: SMS
+      enum:
+      - SMS
+      - Web
+    ABTestNodeConfig:
+      type: object
+      properties:
+        split:
+          type: number
+          description: How contacts are split between the two test paths.
+      description: Configuration of a node that splits contacts between two paths
+        for A/B testing.
+    WorkflowNodeTypeOutput:
+      required:
+      - dataType
+      - name
+      - path
+      type: object
+      properties:
+        default:
+          type: boolean
+          description: Whether this is the default output.
+        path:
+          type: string
+          description: Path to the output value.
+        name:
+          type: string
+          description: Name of the output.
+        dataType:
+          $ref: "#/components/schemas/WorkflowNodeTypeOutputDataType"
+      description: A value that a workflow node type produces for later nodes.
+    ContactUploadResponse:
+      required:
+      - data
+      description: Response summarising the result of a contact upload.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            type: object
+            properties:
+              contacts:
+                type: array
+                description: Uploaded contacts
+                items:
+                  $ref: "#/components/schemas/Contact"
+              errors:
+                type: array
+                description: Contacts that failed validation
+                items:
+                  $ref: "#/components/schemas/Contact"
+              submitted:
+                type: integer
+                description: Number of contacts submitted.
+              inserted:
+                type: integer
+                description: Number of contacts created.
+              updated:
+                type: integer
+                description: Number of existing contacts updated.
+              success:
+                type: integer
+                description: Number of contacts processed successfully.
+            description: Summary of the contact upload.
+    CampaignFilterTags:
+      required:
+      - tag
+      type: object
+      properties:
+        tag:
+          type: string
+          description: The tag value.
+        visible:
+          type: boolean
+          description: Whether the tag is visible.
+    ErrorResponse:
+      required:
+      - error
+      description: Response envelope returned when a request fails.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          error:
+            $ref: "#/components/schemas/Error"
+    SendMessagesRequestFilters:
+      type: object
+      properties:
+        tags:
+          type: array
+          description: Tags that contacts must have.
+          items:
+            type: string
+        attributes:
+          type: array
+          description: Attribute conditions that contacts must meet.
+          items:
+            type: object
+      description: Criteria that select contacts to send the message to.
+    SendMessageNodeConfigFrom:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Whether the message is sent from a group or a custom sender.
+          enum:
+          - group
+          - custom
+        group:
+          $ref: "#/components/schemas/Group"
+        custom:
+          type: string
+          description: Custom sender the message is sent from.
+      description: Sender of the message.
+    UserIntegrationUser:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the user.
+        email:
+          type: string
+          description: Email address of the user.
+      description: User who connected the integration.
+    WorkflowDataReference:
+      required:
+      - name
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Kind of data referenced.
+          enum:
+          - workflow
+          - output
+          - contact
+          - event
+        nodeId:
+          type: string
+          description: ID of the node whose output is referenced.
+        name:
+          type: string
+          description: Name of the referenced value.
+        path:
+          type: string
+          description: Path to the value within the referenced data.
+      description: "A reference to a value available within a workflow, such as a\
+        \ workflow property, a node output, a contact attribute or an event field."
+    LinkClickedTriggerConfig:
+      type: object
+      properties:
+        link:
+          $ref: "#/components/schemas/Link"
+      description: Configuration of a trigger that starts a workflow when a tracked
+        link is clicked.
+    EdgeValidationValue:
+      type: object
+      properties:
+        mandatory:
+          type: boolean
+          description: Whether a value is required.
+        editable:
+          type: boolean
+          description: Whether the value can be edited.
+        value:
+          description: Fixed value of the edge.
+          oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+        default:
+          description: Default value of the edge.
+          oneOf:
+          - type: string
+          - type: number
+          - type: boolean
+      description: Rules for the edge's value.
+    SetWorkflowPropertyNodeConfig:
+      required:
+      - property
+      - value
+      type: object
+      properties:
+        property:
+          type: string
+          description: Name of the workflow property to set.
+        value:
+          description: Value to set on the property.
+          anyOf:
+          - type: string
+          - type: number
+      description: Configuration of a node that sets a workflow property to a value.
+    BalanceResponse:
+      description: Response containing the account balance.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/AccountBalance"
+    UserIntegration:
+      required:
+      - connectedAt
+      - id
+      - user
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the integration connection.
+        connectedAt:
+          type: string
+          description: Date and time the integration was connected.
+          format: date-time
+        user:
+          $ref: "#/components/schemas/UserIntegrationUser"
+      description: A user's connection to a third-party integration.
+    CampaignReporting:
+      required:
+      - destination
+      type: object
+      properties:
+        when:
+          type: string
+          description: When a report is sent.
+        delay:
+          type: string
+          description: How long after the campaign runs the report is sent.
+        unit:
+          type: string
+          description: Unit of the report delay.
+        destination:
+          type: string
+          description: Destination the report is sent to.
+      description: Settings for reports sent after the campaign runs.
+    InternationalNumber:
+      required:
+      - country
+      - number
+      type: object
+      properties:
+        country:
+          type: string
+          description: Country code of the phone number.
+        number:
+          type: string
+          description: The phone number.
+          example: 123-456-7890
+        verified:
+          type: string
+          description: Date and time the phone number was verified.
+          format: date-time
+        valid:
+          type: boolean
+          description: Whether the phone number is valid.
+        lineType:
+          type: string
+          description: "Line type of the phone number, such as mobile."
+          example: mobile
+      description: A phone number together with its country and validation details.
+    PhoneNumber:
+      required:
+      - country
+      - id
+      - number
+      - status
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the phone number.
+        name:
+          type: string
+          description: Display name of the phone number.
+        status:
+          type: string
+          description: Status of the phone number.
+        number:
+          type: string
+          description: The phone number.
+        country:
+          type: string
+          description: Country of the phone number.
+        type:
+          type: string
+          description: Type of the phone number.
+        verified:
+          type: boolean
+          description: Whether the phone number has been verified.
+        provider:
+          type: string
+          description: Provider of the phone number.
+        supportedDestinations:
+          type: array
+          description: Destination countries the phone number can send to.
+          items:
+            type: string
+        forwardTo:
+          type: object
+          description: Settings for forwarding to another number.
+        universalReply:
+          type: boolean
+          description: Whether universal reply is enabled for the phone number.
+        channels:
+          $ref: "#/components/schemas/PhoneNumberChannels"
+        groups:
+          type: array
+          description: Groups the phone number is assigned to.
+          items:
+            $ref: "#/components/schemas/BasicGroup"
+        hosted:
+          type: boolean
+          description: "Whether the phone number is a hosted number, text-enabled\
+            \ while remaining with another carrier."
+      description: A phone number used by the account to send and receive messages.
+    AccountIdWebhooksBody:
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://myserver.com/send/callback/here
+        eventTypes:
+          type: array
+          items:
+            type: string
+            enum:
+            - contact-created
+            - contact-updated
+            - contact-removed
+            - message-received
+            - message-sent
+            - message-status
+            - conversation-started
+            - contact-opt-out
+            - contact-opt-in
+            - list-opt-out
+            - list-opt-in
+    Webhook:
+      required:
+      - destination
+      - eventTypes
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the webhook.
+          readOnly: true
+        type:
+          type: string
+          description: Type of the webhook.
+        eventTypes:
+          type: array
+          description: Events the webhook is notified about.
+          items:
+            $ref: "#/components/schemas/EventType"
+        destination:
+          type: string
+          description: URL notifications are sent to.
+      description: A subscription that notifies a destination URL when selected events
+        occur.
+    CampaignTrigger:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code of the campaign trigger type.
+        name:
+          type: string
+          description: Name of the campaign trigger type.
+      description: How the campaign is triggered.
+    ContactUpdate:
+      type: object
+      properties:
+        property:
+          $ref: "#/components/schemas/Property"
+        value:
+          type: string
+          description: Value to set on the property.
+      description: A value to set on a contact property.
+    WorkflowNodeConfig:
+      type: object
+      description: "Configuration of a workflow node, whose shape depends on the node\
+        \ type."
+      oneOf:
+      - $ref: "#/components/schemas/MessageReceivedTriggerConfig"
+      - $ref: "#/components/schemas/LinkClickedTriggerConfig"
+      - $ref: "#/components/schemas/MessageStatusTriggerConfig"
+      - $ref: "#/components/schemas/ListTriggerConfig"
+      - $ref: "#/components/schemas/ContactCreatedTriggerConfig"
+      - $ref: "#/components/schemas/ContactUpdatedTriggerConfig"
+      - $ref: "#/components/schemas/FormSubmittedTriggerConfig"
+      - $ref: "#/components/schemas/ListNodeConfig"
+      - $ref: "#/components/schemas/ABTestNodeConfig"
+      - $ref: "#/components/schemas/ChoiceNodeConfig"
+      - $ref: "#/components/schemas/DelayNodeConfig"
+      - $ref: "#/components/schemas/FilterNodeConfig"
+      - $ref: "#/components/schemas/IfThenNodeConfig"
+      - $ref: "#/components/schemas/IncrDecrementNodeConfig"
+      - $ref: "#/components/schemas/SendMessageNodeConfig"
+      - $ref: "#/components/schemas/SetWorkflowPropertyNodeConfig"
+      - $ref: "#/components/schemas/UpdateContactNodeConfig"
+      - $ref: "#/components/schemas/GoogleSheetsExportNodeConfig"
+      - $ref: "#/components/schemas/GoogleSheetsLookupNodeConfig"
+      - $ref: "#/components/schemas/LinkClickedNodeConfig"
+      - $ref: "#/components/schemas/MessageReceivedNodeConfig"
+    NumEdgeConditions:
+      type: string
+      description: How the number of edges is compared with the required count.
+      enum:
+      - exactly
+      - at least
+    DripCampaignStats:
+      type: object
+      properties:
+        entered:
+          type: number
+          description: Number of contacts that have entered.
+        active:
+          type: number
+          description: Number of contacts currently active.
+        errored:
+          type: number
+          description: Number of contacts that encountered an error.
+        noAction:
+          type: number
+          description: Number of contacts that took no action.
+        optOut:
+          type: number
+          description: Number of contacts that opted out.
+        engaged:
+          type: number
+          description: Number of contacts that engaged.
+      description: Contact counts that summarise the progress of a drip campaign or
+        one of its messages.
+    EventType:
+      type: string
+      description: Type of event that a webhook can be notified about.
+      enum:
+      - message-received
+      - message-status
+      - message-sent
+      - conversation-started
+      - conversation-closed
+      - contact-created
+      - contact-updated
+      - contact-removed
+      - contact-opt-out
+      - contact-opt-in
+    UpdateContactNodeConfig:
+      type: object
+      properties:
+        contact:
+          $ref: "#/components/schemas/WorkflowDataReference"
+        updates:
+          type: array
+          description: Property updates to apply to the contact.
+          items:
+            $ref: "#/components/schemas/ContactUpdate"
+      description: Configuration of a node that updates contact properties.
+    ContactsResponse:
+      required:
+      - data
+      description: Paginated response containing a list of contacts.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The contacts in this page of results.
+            items:
+              $ref: "#/components/schemas/Contact"
+    AutorespondersResponse:
+      required:
+      - data
+      description: Paginated response containing a list of autoresponders.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The autoresponders in this page of results.
+            items:
+              $ref: "#/components/schemas/Autoresponder"
+    Delay:
+      required:
+      - days
+      - hours
+      - minutes
+      type: object
+      properties:
+        days:
+          type: number
+          description: Number of days.
+        hours:
+          type: number
+          description: Number of hours.
+        minutes:
+          type: number
+          description: Number of minutes.
+      description: "A duration expressed in days, hours and minutes."
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the template.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the template.
+        type:
+          $ref: "#/components/schemas/TemplateType"
+        template:
+          type: string
+          description: "Template text, which may include contact attribute placeholders."
+          example: "Hi {{{firstName}}}. Grab 20% off today only at ABC Shoes"
+        media:
+          type: array
+          description: List of media objects attached to message
+          items:
+            $ref: "#/components/schemas/Media"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A reusable message or web template.
+    Pagination:
+      required:
+      - hasNext
+      - limit
+      - offset
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of results returned in this page.
+        offset:
+          type: integer
+          description: Number of results skipped before this page.
+        hasNext:
+          type: boolean
+          description: Whether more results are available after this page.
+      description: Paging details for a list result.
+    BasicGroup:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the group.
+        name:
+          type: string
+          description: Name of the group.
+      description: A group's identifier and name.
+    CampaignPhoneNumberFilter:
+      type: object
+      properties:
+        group:
+          $ref: "#/components/schemas/CampaignPhoneNumberFilterGroup"
+      description: Selects the phone numbers the campaign is sent from.
+    BasicResponse:
+      required:
+      - success
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request succeeded.
+      description: "Base envelope returned by every API call, indicating whether the\
+        \ request succeeded."
+    WorkflowNodePropertyType:
+      type: string
+      description: Input control type used to edit a workflow node property.
+      enum:
+      - basictext
+      - number
+      - text
+      - textarea
+      - password
+      - checkbox
+      - dropdown
+      - apidropdown
+      - split
+      - form
+      - groups
+      - group
+      - dynamicgroup
+      - lists
+      - list
+      - to
+      - composer
+      - contactattributecondition
+      - filtercondition
+      - edges
+      - property
+      - update
+      - link
+      - delay
+      - simpledelay
+      - workflowproperty
+      - messagestatusanderror
+      - dynamicgroup
+      - errors
+      - googlesheet
+      - googlesheetcolumnmappings
+      - googlesheetcolumn
+      - timeout
+      - contactselect
+      - userintegration
+      - url
+      - code
+      - readonlytext
+      - buttongroup
+      - cron
+      - phonenumber
+      - image
+    LinkSourceStats:
+      type: object
+      properties:
+        totalClicks:
+          type: number
+          description: Total number of clicks recorded.
+        uniqueClicks:
+          type: number
+          description: Number of unique clicks recorded.
+        ctr:
+          type: number
+          description: Click-through rate.
+      description: Click statistics for the link source.
+      readOnly: true
+    WorkflowNodeTypeOutputDataType:
+      type: string
+      description: Data type of a workflow node output.
+      enum:
+      - boolean
+      - call
+      - contact
+      - country
+      - date
+      - file
+      - group
+      - link
+      - list
+      - message
+      - number
+      - object
+      - payload
+      - phonenumber
+      - string
+      - tweet
+    PhoneNumberChannels:
+      type: object
+      properties:
+        sms:
+          $ref: "#/components/schemas/SmsChannel"
+        voice:
+          $ref: "#/components/schemas/VoiceChannel"
+        whatsapp:
+          $ref: "#/components/schemas/WhatsappChannel"
+      description: "The SMS, voice and WhatsApp channels configured for a phone number\
+        \ or sender."
+    List:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the list.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the list.
+        source:
+          $ref: "#/components/schemas/ListSource"
+        keyword:
+          type: string
+          description: Keyword that contacts text to join the list.
+        doubleOptIn:
+          $ref: "#/components/schemas/ListDoubleOptIn"
+        filter:
+          $ref: "#/components/schemas/ContactFilter"
+        optInConfirmation:
+          type: string
+          description: Message sent to confirm that a contact has joined the list.
+      description: A list of contacts.
+    ContactUpdatedTriggerConfig:
+      type: object
+      properties:
+        condition:
+          $ref: "#/components/schemas/WorkflowCondition"
+      description: Configuration of a trigger that starts a workflow when a contact
+        is updated.
+    GoogleSheetColumn:
+      required:
+      - index
+      - name
+      type: object
+      properties:
+        index:
+          type: number
+          description: Position of the column.
+        name:
+          type: string
+          description: Name of the column.
+      description: A column in a Google Sheets tab.
+    SupportedDestinations:
+      type: object
+      additionalProperties:
+        type: boolean
+      description: Map of destination countries to whether messages can be sent to
+        them.
+    IfThenNodeConfig:
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: Conditions that decide which branch is followed.
+          items:
+            $ref: "#/components/schemas/WorkflowCondition"
+      description: Configuration of a node that branches depending on whether its
+        conditions are met.
+    Updated:
+      required:
+      - at
+      type: object
+      properties:
+        at:
+          type: string
+          description: Date and time of the change.
+          format: date-time
+        by:
+          $ref: "#/components/schemas/UpdatedBy"
+      description: Audit information recording when and by whom a record was changed.
+      readOnly: true
+    MessageResponse:
+      required:
+      - data
+      description: Response containing a single message.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Message"
+    Channel:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: Whether the channel is active.
+      description: Base settings shared by every phone number channel.
+    FilterNodeConfig:
+      type: object
+      properties:
+        conditions:
+          type: array
+          description: Conditions a contact must meet to continue.
+          items:
+            $ref: "#/components/schemas/WorkflowCondition"
+      description: Configuration of a node that lets only contacts matching its conditions
+        continue.
+    Media:
+      type: object
+      properties:
+        url:
+          type: string
+          description: URL of the media file.
+        type:
+          type: string
+          description: Content type of the media file.
+        name:
+          type: string
+          description: Display name of the media file.
+        filename:
+          type: string
+          description: File name of the media file.
+      description: A media file attached to a message.
+    WorkflowNodeType:
+      required:
+      - id
+      - name
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the node type.
+          readOnly: true
+        type:
+          type: string
+          description: "Kind of the node type, such as trigger or action."
+          readOnly: true
+        group:
+          type: string
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the group.
+              readOnly: true
+            label:
+              type: string
+              description: Display label of the group.
+              readOnly: true
+          description: Group the node type is listed under.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the node type.
+          readOnly: true
+        label:
+          type: string
+          description: Display label of the node type.
+          readOnly: true
+        description:
+          type: string
+          description: Description of the node type.
+          readOnly: true
+        icon:
+          type: string
+          description: Icon of the node type.
+          readOnly: true
+        properties:
+          type: array
+          description: Configurable properties of the node type.
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/WorkflowNodeProperty"
+        outputs:
+          type: array
+          description: Values the node type produces.
+          readOnly: true
+          items:
+            $ref: "#/components/schemas/WorkflowNodeTypeOutput"
+        validation:
+          $ref: "#/components/schemas/WorkflowNodeTypeValidation"
+        supportsReenrollment:
+          type: boolean
+          description: Whether contacts can enter the node more than once.
+          readOnly: true
+        color:
+          type: string
+          description: Display color of the node type.
+          readOnly: true
+        status:
+          type: string
+          description: Availability status of the node type.
+          readOnly: true
+        supportLink:
+          type: string
+          description: URL of support documentation for the node type.
+          readOnly: true
+      description: A type of node that can be used in a workflow.
+    WorkflowDefinition:
+      required:
+      - edges
+      - nodes
+      type: object
+      properties:
+        nodes:
+          type: array
+          description: Nodes in the workflow.
+          items:
+            $ref: "#/components/schemas/WorkflowNode"
+        edges:
+          type: array
+          description: Edges connecting the workflow nodes.
+          items:
+            $ref: "#/components/schemas/WorkflowEdge"
+        properties:
+          $ref: "#/components/schemas/WorkflowProperties"
+      description: "The nodes, edges and properties that define a workflow version."
+    AdvancedDelay:
+      type: object
+      properties:
+        initialDelay:
+          $ref: "#/components/schemas/Delay"
+        additionalTime:
+          $ref: "#/components/schemas/AdvancedDelayAdditionalTime"
+      description: A delay with an initial duration and optional constraints on the
+        days and time it ends.
+    AvailablePhoneNumbersResponse:
+      description: Response containing the phone numbers available to add to the account.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            type: array
+            description: The available phone numbers.
+            items:
+              $ref: "#/components/schemas/AvailablePhoneNumber"
+    SendMessagesRequestMedia:
+      type: object
+      properties:
+        url:
+          type: string
+          description: URL of the media file.
+    CampaignRequest:
+      type: object
+      properties:
+        trigger:
+          $ref: "#/components/schemas/CampaignRequestTrigger"
+        filters:
+          $ref: "#/components/schemas/CampaignRequestFilters"
+        template:
+          type: string
+          description: Message template sent by the campaign.
+      description: Request payload for creating a campaign.
+    IncrDecrementNodeConfig:
+      required:
+      - property
+      - value
+      type: object
+      properties:
+        operation:
+          type: string
+          description: Whether to add to or subtract from the property.
+          enum:
+          - add
+          - subtract
+        property:
+          type: string
+          description: Name of the property to change.
+        value:
+          type: number
+          description: Amount to add or subtract.
+      description: Configuration of a node that increments or decrements a numeric
+        property.
+    LinkSourceStatsResponse:
+      required:
+      - data
+      description: Paginated response containing click statistics over time for a
+        link source.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: Click counts by date for the link source.
+            items:
+              $ref: "#/components/schemas/LinkSourceStat"
+    Campaign:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the campaign.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the campaign.
+        description:
+          type: string
+          description: Description of the campaign.
+        fieldMappings:
+          type: array
+          description: Mappings from uploaded file columns to contact attributes.
+          items:
+            $ref: "#/components/schemas/FieldMapping"
+        filters:
+          $ref: "#/components/schemas/CampaignFilter"
+        media:
+          type: array
+          description: List of media objects attached to message
+          items:
+            $ref: "#/components/schemas/Media"
+        phoneNumberFilter:
+          $ref: "#/components/schemas/CampaignPhoneNumberFilter"
+        schedule:
+          $ref: "#/components/schemas/Schedule"
+        nextExecution:
+          type: string
+          description: When the campaign is next due to run.
+        reporting:
+          $ref: "#/components/schemas/CampaignReporting"
+        template:
+          type: string
+          description: Message template sent by the campaign.
+        trigger:
+          $ref: "#/components/schemas/CampaignTrigger"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+        paused:
+          type: string
+          description: When the campaign was paused.
+        lastJob:
+          $ref: "#/components/schemas/CampaignExecution"
+      description: "A reusable message campaign with its contact filters, template,\
+        \ schedule and reporting settings."
+    ListTriggerConfig:
+      type: object
+      properties:
+        list:
+          $ref: "#/components/schemas/List"
+      description: Configuration of a trigger that starts a workflow based on membership
+        of a contact list.
+    CampaignRequestTrigger:
+      type: object
+      properties:
+        code:
+          type: string
+          description: |
+            Campaign type specifies how it sources contacts and what event triggers its execution  Sort order
+              * `M` - Manual
+              * `S` - Scheduled
+              * `FU` - File Upload
+              * `V2` - V2
+          enum:
+          - M
+          - S
+          - FU
+          - V2
+      description: How the campaign is triggered.
+    DripCampaignTrigger:
+      required:
+      - delay
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the trigger event.
+        message:
+          type: string
+          description: Message text that triggers the drip campaign when received.
+        groups:
+          type: array
+          description: Groups whose events trigger the drip campaign.
+          items:
+            $ref: "#/components/schemas/Group"
+        list:
+          $ref: "#/components/schemas/List"
+        group:
+          $ref: "#/components/schemas/Group"
+        delay:
+          $ref: "#/components/schemas/Delay"
+      description: Event that enrols contacts in the drip campaign.
+    SmsRegulatory:
+      type: object
+      properties:
+        brandStatus:
+          type: string
+          description: Registration status of the brand.
+        campaign:
+          $ref: "#/components/schemas/SmsRegulatoryCampaign"
+        pft:
+          type: boolean
+          description: PFT flag of the SMS registration.
+        submitted:
+          type: string
+          description: Date and time the registration was submitted.
+          format: date-time
+        approved:
+          type: string
+          description: Date and time the registration was approved.
+          format: date-time
+        rejected:
+          type: string
+          description: Date and time the registration was rejected.
+          format: date-time
+      description: Carrier registration details for sending SMS from a phone number.
+    CampaignRequestFilters:
+      type: object
+      properties:
+        contacts:
+          type: array
+          description: Contacts to include in the campaign.
+          items:
+            type: string
+        tags:
+          type: array
+          description: Tags that contacts must have to be included.
+          items:
+            type: string
+        attributes:
+          type: array
+          description: Attribute conditions that contacts must meet to be included.
+          items:
+            type: string
+      description: Criteria that select the contacts the campaign is sent to.
+    GoogleSheetsExportNodeConfig:
+      type: object
+      properties:
+        googlesheet:
+          $ref: "#/components/schemas/GoogleSheet"
+        properties:
+          type: array
+          description: Values to write to each column.
+          items:
+            $ref: "#/components/schemas/GoogleSheetColumnMapping"
+        userId:
+          type: string
+          description: ID of the user whose integration is used.
+      description: Configuration of a node that writes values to a Google Sheets spreadsheet.
+    GroupNotification:
+      type: object
+      properties:
+        destination:
+          $ref: "#/components/schemas/GroupNotificationDestination"
+        integration:
+          type: string
+          description: Integration used to deliver the notification.
+        group:
+          $ref: "#/components/schemas/BasicGroup"
+      description: A notification destination configured for a group.
+    User:
+      required:
+      - email
+      - id
+      - role
+      description: A user of the Sakari account.
+      allOf:
+      - $ref: "#/components/schemas/Person"
+      - type: object
+        properties:
+          role:
+            type: string
+            description: Role of the user in the account.
+            enum:
+            - Administrator
+            - CampaignManager
+            - Sender
+            - ReadOnly
+          tacAccepted:
+            type: string
+            description: Date and time the user accepted the terms and conditions.
+            format: date-time
+    Message:
+      required:
+      - created
+      - id
+      - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the message.
+          readOnly: true
+        contact:
+          $ref: "#/components/schemas/Contact"
+        conversation:
+          $ref: "#/components/schemas/Conversation"
+        group:
+          $ref: "#/components/schemas/Group"
+        type:
+          type: string
+          description: "Type of the message, such as SMS or MMS."
+        message:
+          type: string
+          description: Text of the message.
+        template:
+          type: string
+          description: Template used to generate the message.
+        outgoing:
+          type: boolean
+          description: Whether the message was sent by the account rather than received.
+        phoneNumber:
+          type: string
+          description: Account phone number used for the message.
+          example: "+1234567890"
+        price:
+          type: number
+          description: Price charged for the message.
+        segments:
+          type: number
+          description: Number of segments the message was split into.
+        read:
+          type: boolean
+          description: Whether the message has been read.
+        status:
+          type: string
+          description: Delivery status of the message.
+        media:
+          type: array
+          description: List of media objects attached to message
+          items:
+            $ref: "#/components/schemas/Media"
+        sendAt:
+          type: string
+          description: Date and time the message is scheduled to be sent.
+          format: date-time
+        error:
+          $ref: "#/components/schemas/Error"
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: An SMS or MMS message sent to or received from a contact.
+    Hours:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          $ref: "#/components/schemas/Time"
+        end:
+          $ref: "#/components/schemas/Time"
+      description: "A time range within a day, with a start and an end time."
+    Form:
+      required:
+      - conversions
+      - id
+      - impressions
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the form.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the form.
+        active:
+          type: string
+          description: Date and time the form was activated.
+          format: date-time
+          readOnly: true
+        impressions:
+          type: number
+          description: Number of times the form was viewed.
+          readOnly: true
+        conversions:
+          type: number
+          description: Number of times the form was submitted.
+          readOnly: true
+        created:
+          $ref: "#/components/schemas/Updated"
+        updated:
+          $ref: "#/components/schemas/Updated"
+      description: A web form that collects contact sign-ups.
+    DripCampaignExecutionsResponse:
+      description: Response containing drip campaign executions.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            type: array
+            description: The drip campaign executions.
+            items:
+              $ref: "#/components/schemas/DripCampaignExecution"
+    ListDoubleOptIn:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          description: Whether double opt-in is required to join the list.
+        prompt:
+          type: string
+          description: Message asking the contact to confirm the opt-in.
+      description: Double opt-in settings for the list.
+    FieldMapping:
+      type: object
+      properties:
+        attribute:
+          type: string
+          description: Contact attribute the column maps to.
+        column:
+          type: string
+          description: Column in the uploaded file.
+        mandatory:
+          type: boolean
+          description: Whether the column must have a value.
+      description: Maps a column of an uploaded file to a contact attribute.
+    Time:
+      required:
+      - hour
+      - minute
+      type: object
+      properties:
+        hour:
+          type: number
+          description: Hour of the day.
+        minute:
+          type: number
+          description: Minute of the hour.
+      description: A time of day expressed as an hour and minute.
+    SendMessagesRequestPhoneNumberFilter:
+      type: object
+      properties:
+        group:
+          $ref: "#/components/schemas/SendMessagesRequestPhoneNumberFilterGroup"
+      description: Selects the phone numbers the message is sent from.
+    SendMessageNodeConfig:
+      type: object
+      properties:
+        from:
+          $ref: "#/components/schemas/SendMessageNodeConfigFrom"
+        to:
+          $ref: "#/components/schemas/SendMessageNodeConfigTo"
+        message:
+          $ref: "#/components/schemas/SendMessageNodeConfigMessage"
+      description: Configuration of a node that sends a message.
+    AdvancedDelayAdditionalTime:
+      type: object
+      properties:
+        timezone:
+          type: string
+          description: Time zone used for the day and time constraints.
+        days:
+          $ref: "#/components/schemas/AdvancedDelayDays"
+        time:
+          $ref: "#/components/schemas/AdvancedDelayTime"
+      description: Constraints on the days and time at which the delay ends.
+    MessageStatusTriggerConfig:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Message status that triggers the workflow.
+          enum:
+          - sent
+          - error
+        errors:
+          type: array
+          description: Message errors that trigger the workflow.
+          items:
+            $ref: "#/components/schemas/Error"
+      description: Configuration of a trigger that starts a workflow when a message
+        reaches a given status.
+    SmsRegulatoryCampaign:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the registered campaign.
+        campaignId:
+          type: string
+          description: Campaign ID assigned by the registry.
+        useCase:
+          type: string
+          description: Use case of the registered campaign.
+      description: Registered messaging campaign.
+    SendMessageToType:
+      type: string
+      description: Type of recipient a workflow message is sent to.
+      enum:
+      - contact
+      - custom
+      - group
+      - user
+    SmsChannel:
+      description: SMS channel settings for a phone number or sender.
+      allOf:
+      - $ref: "#/components/schemas/Channel"
+      - type: object
+        properties:
+          universalReply:
+            type: boolean
+            description: Whether universal reply is enabled for the SMS channel.
+          supportedDestinations:
+            $ref: "#/components/schemas/SupportedDestinations"
+          regulatory:
+            $ref: "#/components/schemas/SmsRegulatory"
+    WorkflowEdgeType:
+      type: string
+      description: Type of an edge connecting two workflow nodes.
+      enum:
+      - standard
+      - timeout
+      - error
+    SelectOption:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Value of the option.
+        label:
+          type: string
+          description: Display label of the option.
+      description: An option offered for a selectable workflow node property.
+    EdgeValidation:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of the edge.
+          enum:
+          - timeout
+          - standard
+          - error
+        value:
+          $ref: "#/components/schemas/EdgeValidationValue"
+        multiple:
+          type: boolean
+          description: Whether multiple edges of this type are allowed.
+        defaultEdge:
+          type: boolean
+          description: Whether this is the default edge.
+      description: Rules for an outgoing edge of a workflow node type.
+    QuickCampaignRequestMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Text of the message.
+        media:
+          type: array
+          description: Media files attached to the message.
+          items:
+            $ref: "#/components/schemas/Media"
+      description: Message content sent by the campaign.
+    AccountBalance:
+      required:
+      - balance
+      - country
+      - segments
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance.
+          format: double
+        country:
+          type: string
+          description: Country used to price message segments.
+        segments:
+          type: number
+          description: Number of message segments the current balance can pay for.
+        segmentPrice:
+          type: number
+          description: Price of a single message segment.
+      description: The current balance of a Sakari account and the message segments
+        it can pay for.
+    ConversationResponse:
+      required:
+      - data
+      description: Response containing a single conversation.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Conversation"
+    LinkSourceStat:
+      required:
+      - date
+      - value
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date the statistic applies to.
+          format: date-time
+        value:
+          type: number
+          description: Number of clicks on that date.
+      description: Click count for a tracked link source on a given date.
+    WorkflowNodeTypeValidation:
+      type: object
+      properties:
+        numEdgeCondition:
+          $ref: "#/components/schemas/NumEdgeConditions"
+        numEdges:
+          type: number
+          description: Required number of edges.
+        edges:
+          type: array
+          description: Rules for each outgoing edge.
+          items:
+            $ref: "#/components/schemas/EdgeValidation"
+      description: Rules for the outgoing edges a workflow node type must have.
+      readOnly: true
+    GoogleSheetsLookupNodeConfig:
+      type: object
+      properties:
+        googlesheet:
+          $ref: "#/components/schemas/GoogleSheet"
+        searchColumn:
+          $ref: "#/components/schemas/GoogleSheetColumn"
+        outputColumn:
+          $ref: "#/components/schemas/GoogleSheetColumn"
+        searchValue:
+          type: string
+          description: Value to search for.
+        userId:
+          type: string
+          description: ID of the user whose integration is used.
+      description: Configuration of a node that looks up a value in a Google Sheets
+        spreadsheet.
+    Condition:
+      required:
+      - attribute
+      - comparator
+      - value
+      type: object
+      properties:
+        attribute:
+          type: string
+          description: Contact attribute to compare.
+        comparator:
+          type: string
+          description: Comparison operator to apply.
+        value:
+          description: Value or values to compare the attribute against.
+          oneOf:
+          - type: array
+            items:
+              type: string
+          - type: array
+            items:
+              type: number
+          - type: string
+          - type: number
+      description: A comparison applied to a contact attribute to filter contacts.
+    DayOfWeek:
+      type: number
+      description: "Day of the week, from 0 for Sunday to 6 for Saturday."
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+    SendMessageNodeConfigTo:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/SendMessageToType"
+        mobile:
+          $ref: "#/components/schemas/InternationalNumber"
+        group:
+          $ref: "#/components/schemas/Group"
+        user:
+          $ref: "#/components/schemas/User"
+        contact:
+          $ref: "#/components/schemas/WorkflowDataReference"
+      description: Recipient of the message.
+    CreateContactResponse:
+      description: "The created contacts, or a summary of the uploaded contacts."
+      oneOf:
+      - $ref: "#/components/schemas/ContactsResponse"
+      - $ref: "#/components/schemas/ContactUploadResponse"
+    WhatsappChannel:
+      description: WhatsApp channel settings for a phone number or sender.
+      allOf:
+      - $ref: "#/components/schemas/Channel"
+    WorkflowNodePropertyCondition:
+      required:
+      - comparator
+      - property
+      - value
+      type: object
+      properties:
+        property:
+          type: string
+          description: Name of the property to check.
+        comparator:
+          type: string
+          description: Comparison operator to apply.
+        value:
+          type: string
+          description: Value to compare against.
+      description: A condition on another property that controls when a workflow node
+        property applies.
+    ShareFileResponse:
+      description: Response containing the short link to a shared file.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            required:
+            - link
+            type: object
+            properties:
+              link:
+                type: string
+                description: Short link to the shared file.
+              expires:
+                type: string
+                description: Date and time the link expires.
+                format: date-time
+            description: Details of the shared file.
+    Error:
+      required:
+      - code
+      - description
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code identifying the error.
+          example: CONT-010
+        description:
+          type: string
+          description: Human-readable description of the error.
+          example: Contact has requested no further communication
+      description: "An error reported by the API, with a code and a human-readable\
+        \ description."
+    FormSubmittedTriggerConfig:
+      type: object
+      properties:
+        form:
+          $ref: "#/components/schemas/Form"
+      description: Configuration of a trigger that starts a workflow when a form is
+        submitted.
+    ConversationsResponse:
+      required:
+      - data
+      description: Paginated response containing a list of conversations.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The conversations in this page of results.
+            items:
+              $ref: "#/components/schemas/Conversation"
+    Contact:
+      required:
+      - id
+      description: A contact in the Sakari address book.
+      allOf:
+      - $ref: "#/components/schemas/Person"
+      - type: object
+        properties:
+          lists:
+            type: array
+            description: Lists the contact belongs to.
+            items:
+              $ref: "#/components/schemas/ContactList"
+          attributes:
+            type: object
+            description: Custom attributes of the contact.
+          optIn:
+            type: string
+            description: Date and time the contact opted in to messages.
+            format: date-time
+          blocked:
+            type: string
+            description: Date and time the contact was blocked.
+            format: date-time
+          activecampaign:
+            type: object
+            properties:
+              id:
+                type: number
+                description: ID of the contact in ActiveCampaign.
+            description: Link to the matching ActiveCampaign record.
+          hubspot:
+            type: object
+            properties:
+              id:
+                type: number
+                description: ID of the contact in HubSpot.
+            description: Link to the matching HubSpot record.
+          pipedrive:
+            type: object
+            properties:
+              id:
+                type: number
+                description: ID of the contact in Pipedrive.
+            description: Link to the matching Pipedrive record.
+          valid:
+            type: boolean
+            description: Whether the contact's details are valid.
+            readOnly: true
+          error:
+            $ref: "#/components/schemas/Error"
+          created:
+            $ref: "#/components/schemas/Updated"
+          updated:
+            $ref: "#/components/schemas/Updated"
+    QuickCampaignRequest:
+      required:
+      - groupId
+      - listId
+      - message
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the campaign.
+        groupId:
+          type: string
+          description: ID of the group that sends the campaign messages.
+        listId:
+          type: string
+          description: ID of the contact list the campaign is sent to.
+        message:
+          $ref: "#/components/schemas/QuickCampaignRequestMessage"
+        sendAt:
+          type: string
+          description: Date and time at which to send the campaign.
+          format: date-time
+      description: Request payload for creating a campaign and executing it immediately
+        or at a scheduled time.
+    MessageReceivedTriggerConfig:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Message text that triggers the workflow.
+        groups:
+          type: array
+          description: Groups whose received messages trigger the workflow.
+          items:
+            $ref: "#/components/schemas/Group"
+      description: Configuration of a trigger that starts a workflow when a message
+        is received.
+    LinksResponse:
+      required:
+      - data
+      description: Paginated response containing a list of tracked links.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The tracked links in this page of results.
+            items:
+              $ref: "#/components/schemas/Link"
+    CampaignFilter:
+      type: object
+      properties:
+        list:
+          description: "Contact list to send to, either as a list object or a list\
+            \ ID."
+          oneOf:
+          - $ref: "#/components/schemas/List"
+          - type: string
+        q:
+          type: string
+          description: Search term that contacts must match.
+        attributes:
+          type: array
+          description: Attribute conditions that contacts must meet.
+          items:
+            $ref: "#/components/schemas/Condition"
+        tags:
+          type: array
+          description: Tags used to select contacts.
+          items:
+            $ref: "#/components/schemas/CampaignFilterTags"
+      description: Criteria that select which contacts a campaign is sent to.
+    WorkflowEdge:
+      required:
+      - id
+      - source
+      - type
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the edge.
+        type:
+          $ref: "#/components/schemas/WorkflowEdgeType"
+        source:
+          type: string
+          description: ID of the node the edge starts from.
+        target:
+          type: string
+          description: ID of the node the edge leads to.
+        value:
+          description: Value the source node must produce for the edge to be followed.
+          anyOf:
+          - type: string
+          - type: boolean
+          - type: number
+      description: A connection from one workflow node to another.
+    GoogleSheetColumnMapping:
+      type: object
+      properties:
+        column:
+          $ref: "#/components/schemas/GoogleSheetColumn"
+        value:
+          type: string
+          description: Value written to the column.
+      description: Maps a value to a column in a Google Sheets tab.
+    Times:
+      type: object
+      properties:
+        sun:
+          type: array
+          description: Time ranges on Sunday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        mon:
+          type: array
+          description: Time ranges on Monday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        tue:
+          type: array
+          description: Time ranges on Tuesday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        wed:
+          type: array
+          description: Time ranges on Wednesday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        thu:
+          type: array
+          description: Time ranges on Thursday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        fri:
+          type: array
+          description: Time ranges on Friday.
+          items:
+            $ref: "#/components/schemas/Hours"
+        sat:
+          type: array
+          description: Time ranges on Saturday.
+          items:
+            $ref: "#/components/schemas/Hours"
+      description: "Weekly schedule of time ranges, listed per day of the week."
+    Schedule:
+      required:
+      - frequency
+      type: object
+      properties:
+        frequency:
+          type: string
+          description: Code for how often the campaign runs.
+          enum:
+          - OD
+          - O
+          - D
+          - M
+        timezone:
+          type: string
+          description: Time zone in which the schedule is evaluated.
+        cron:
+          type: string
+          description: Cron expression defining when the campaign runs.
+      description: When and how often a campaign runs.
+    AutoresponderResponse:
+      required:
+      - data
+      description: Response containing a single autoresponder.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Autoresponder"
+    WorkflowResponse:
+      description: Response containing a single workflow.
+      allOf:
+      - $ref: "#/components/schemas/BasicResponse"
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            $ref: "#/components/schemas/Workflow"
+    LinkSourcesResponse:
+      required:
+      - data
+      description: Paginated response containing the click sources of a tracked link.
+      allOf:
+      - $ref: "#/components/schemas/PaginatedResponse"
+      - type: object
+        properties:
+          data:
+            type: array
+            description: The link sources in this page of results.
+            items:
+              $ref: "#/components/schemas/LinkSource"
+    GroupNotificationDestination:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the destination.
+        name:
+          type: string
+          description: Name of the destination.
+      description: Destination that receives the notification.
+    AdvancedDelayDays:
+      type: array
+      description: Days of the week on which a delayed step may continue.
+      items:
+        $ref: "#/components/schemas/DayOfWeek"
+  responses:
+    "4XX":
+      description: invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    "5XX":
+      description: invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  parameters:
+    accountIdPath:
+      name: accountId
+      in: path
+      description: Account to apply operations to
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    autoresponderIdPath:
+      name: autoresponderId
+      in: path
+      description: Autoresponder to apply operations to
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    linkIdPath:
+      name: linkId
+      in: path
+      description: ID of link
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    dripCampaignIdPath:
+      name: dripCampaignId
+      in: path
+      description: Drip Campaign to apply operations to
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      description: Results to skip when paginating through a result set
+      required: false
+      style: form
+      explode: true
+      schema:
+        minimum: 0
+        type: integer
+        format: int64
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of results to return
+      required: false
+      style: form
+      explode: true
+      schema:
+        maximum: 100
+        minimum: 1
+        type: integer
+        format: int64
+    contactId:
+      name: contactId
+      in: query
+      description: ID of contact
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    firstName:
+      name: firstName
+      in: query
+      description: Filter by first name or part of
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    lastName:
+      name: lastName
+      in: query
+      description: Filter by last name or part of
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    name:
+      name: name
+      in: query
+      description: Filter by name or part of
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    mobile:
+      name: mobile
+      in: query
+      description: Filter by mobile or part of
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    email:
+      name: email
+      in: query
+      description: Filter by email or part of
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    tags:
+      name: tags
+      in: query
+      description: Filter by tag(s)
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    conversationId:
+      name: conversationId
+      in: query
+      description: ID of conversation
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    country:
+      name: country
+      in: query
+      description: Country in question
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    type:
+      name: type
+      in: query
+      description: Phone number type
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    features:
+      name: features
+      in: query
+      description: Features for phone number
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    areaCode:
+      name: areaCode
+      in: query
+      description: Area Code for phone number
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    contains:
+      name: contains
+      in: query
+      description: What should be in the string
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    postalCode:
+      name: postalCode
+      in: query
+      description: Postal code for Number
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    q:
+      name: q
+      in: query
+      description: General search term that searchs accross multiple fields
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+    versionId:
+      name: versionId
+      in: query
+      description: versionId of the desired Workflow Version
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: string
+  securitySchemes:
+    sakari_auth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.sakari.io/oauth2/token
+          scopes:
+            messages:send: Send messages

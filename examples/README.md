@@ -2,13 +2,13 @@
 
 The `ballerinax/sakari.sms` connector provides practical examples illustrating usage in various scenarios.
 
-[//]: # (TODO: Add examples)
-1. 
-2. 
+1. [Welcome message campaign](./welcome_message_campaign/welcome_message_campaign.md) - Add a customer, save a welcome template and optionally send the welcome text.
+2. [Inbox activity review](./inbox_activity_review/inbox_activity_review.md) - Check the balance and review the latest messages of recent conversations.
 
 ## Prerequisites
 
-[//]: # (TODO: Add prerequisites)
+- A Sakari account with API credentials (client ID and client secret) and its account ID.
+- Ballerina Swan Lake 2201.12.0 or later.
 
 ## Running an example
 
